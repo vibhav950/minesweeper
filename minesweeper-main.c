@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "rand.h"
 
 typedef struct cell {
   int bomb;
@@ -104,8 +105,10 @@ int is_valid(BOARD *board, int x, int y) {
 void place_bombs(BOARD *board) {
   int bombs = board->bombs;
   while (bombs > 0) {
-    int x = rand() % board->rows;
-    int y = rand() % board->cols;
+    // int x = rand() % board->rows;
+    int x = ranged(0, board->rows);
+    // int y = rand() % board->cols;
+    int y = ranged(0, board->cols);
     CELL *cells = *board->cells;
     if (cells[x * board->cols + y].bomb == 0) {
       cells[x * board->cols + y].bomb = 1;
@@ -276,6 +279,8 @@ void move(BOARD *board) {
 }
 
 int main() {
+  randctx();
+
   char c;
   do {
     BOARD *board = malloc(sizeof(BOARD));
