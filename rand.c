@@ -21,7 +21,8 @@ _UINT128 *_state = NULL;
 void randctx(void)
 {
     _state = (_UINT128*) malloc(sizeof(_UINT128));
-    if (!_state){
+    if (!_state)
+    {
         exit(E_INIT);
     }
 
@@ -59,7 +60,7 @@ uint64_t nbits(uint8_t n, uint8_t enforce)
     
     if (enforce)
     {
-        out |= (uint64_t) 0b1 << 63;
+        out |= (uint64_t) 0x1 << 63;
     }
 
     return out;
@@ -74,7 +75,6 @@ uint64_t ranged(uint64_t a, uint64_t b)
     }
 
     uint64_t out;
-    int nb = (int) log2f(b - a) + 1;
 
     out = nbits(64, 0);
     /* Reduce n-bit number to the requested range */
