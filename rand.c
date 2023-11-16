@@ -1,11 +1,18 @@
 #include "./rand.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <intrin.h>
 #include <time.h>
 #include <math.h>
 
-#pragma intrinsic(__rdtsc)
+#ifdef _WIN32
+    #include <intrin.h>
+    #pragma intrinsic(__rdtsc)
+#endif
+
+#ifdef __linux__
+    #include <fcntl.h>
+    #include <unistd.h>
+#endif
 
 _UINT128 *_state = NULL;
 
@@ -26,10 +33,26 @@ void randctx(void)
         exit(E_INIT);
     }
 
-    /* Seed the generator with a high-precision CPU counter
-       and the current timestamp */
-    _state->x0 = (uint64_t) __rdtsc();
-    _state->x1 = (uint64_t) time(NULL);
+    /* On Windows machines, seed the generator with a
+       high-precision CPU counter and the current timestamp */
+    #ifdef _WIN32
+        _state->x0 = (uint64_t) __rdtsc();
+        _state->x1 = (uint64_t) time(NULL);
+    #endif
+
+    /* On Linux machines, seed the generator entirely with
+       random bytes from /dev/urandom */
+    #ifdef __linux__
+        int res;
+        if ((res = open("/dev/urandom", O_RDONLY)) < 0)
+        {
+            exit(E_INIT);
+        }
+        if (read(res, (void*) _state, sizeof(_UINT128)) < 0)
+        {
+            exit(E_INIT);
+        }
+    #endif
 
     for (int i = 0; i < 128; ++i)
     {
