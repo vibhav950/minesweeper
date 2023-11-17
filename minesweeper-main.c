@@ -383,7 +383,6 @@ void Display(MSW_CTX *ctx, int sx, int sy) {
   }
   printf("\n    %s%sFLAGS%s %2d\t", BG_YELLOW, FG_BLACK, FG_BG_CLEAR,
          board->flags);
-  printf("%s%sTIME%s %4ds\n", BG_GRAY, FG_BLACK, FG_BG_CLEAR, 0);
 }
 
 // Function that clicks cells recursively
