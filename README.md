@@ -1,6 +1,6 @@
 # Minesweeper
 
-### Minesweeper game written entirely in C which works in your terminal!
+### Minesweeper game written entirely in C, which works in your terminal!
 
 It features the following:
 - Lightweight and portable design
