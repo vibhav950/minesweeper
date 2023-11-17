@@ -16,6 +16,7 @@
 
 /* ===================== DEV ===================== */
 
+// Leaderboard doubly linked priority list
 typedef struct leader {
   int time;
   char name[20];
@@ -23,8 +24,7 @@ typedef struct leader {
   struct leader *previous;
 } LEADER;
 
-LEADER lboard;
-
+// function to check if a file exists
 int exists(const char *fname) {
   FILE *file;
   if ((file = fopen(fname, "r"))) {
@@ -34,8 +34,10 @@ int exists(const char *fname) {
   return 0;
 }
 
+// Global leaderboard variable
 LEADER lboard = {.name = "", .time = 0, .next = NULL, .previous = NULL};
 
+// function to initialize the leaderboard from files
 void init_leader() {
   FILE *infile;
   LEADER *temp = &lboard;
@@ -68,6 +70,7 @@ void init_leader() {
   }
 }
 
+// function to insert a new entry into the leaderboard
 void insert_leader(char name[], int time) {
   LEADER *temp = &lboard;
 
@@ -99,6 +102,7 @@ void insert_leader(char name[], int time) {
   temp->next = new_leader;
 }
 
+// function to display the leaderboard
 void display_leader() {
   printf("\n\n Leaderboard\n");
   LEADER *temp = lboard.next;
@@ -110,6 +114,7 @@ void display_leader() {
   }
 }
 
+// writes all the leaderboard contents to csv files
 void write_leader() {
   FILE *outfile;
   LEADER *temp = lboard.next;
@@ -127,6 +132,7 @@ void write_leader() {
 
 /* ===================== DEV ===================== */
 
+// Checks the win state. Win is when all the valid cells are clicked
 MSW_STATE CheckWin(MSW_CTX *ctx) {
   MSW_CELL *cells = *(ctx->board)->cells;
   MSW_BOARD *board = ctx->board;
@@ -147,6 +153,7 @@ MSW_STATE CheckWin(MSW_CTX *ctx) {
   return MSW_WIN;
 }
 
+// Prints the difficulty menu
 void PrintDifficultyMenu(int diff) {
   system("clear");
   printf("\n\n\n");
@@ -174,10 +181,13 @@ void PrintDifficultyMenu(int diff) {
     printf(" EASY   MEDIUM  %s%s HARD %s", BG_RED_LIGHT, FG_BLACK, FG_BG_CLEAR);
     break;
   }
+  printf("\n\n\n\n\n");
 }
 
+// Clears the screen
 void Clr(void) { printf(" \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n "); }
 
+// Function to select the difficulty based on user input
 void SelectDifficulty(MSW_CTX *ctx) {
   char c;
   int difficulty = 1;
@@ -221,16 +231,22 @@ void SelectDifficulty(MSW_CTX *ctx) {
   case 1:
     board->rows = 9;
     board->cols = 9;
+    board->bombs = 10;
+    board->flags = 10;
     break;
 
   case 2:
     board->rows = 16;
     board->cols = 16;
+    board->bombs = 40;
+    board->flags = 40;
     break;
 
   case 3:
     board->rows = 16;
     board->cols = 30;
+    board->bombs = 99;
+    board->flags = 99;
     break;
 
   /* dummy */
@@ -243,25 +259,7 @@ void SelectDifficulty(MSW_CTX *ctx) {
   ctx->difficulty = difficulty;
 }
 
-void SetBombs(MSW_CTX *ctx) {
-  MSW_BOARD *board = ctx->board;
-
-  if (board->rows == 9 && board->cols == 9) {
-    board->bombs = 10;
-    board->flags = 10;
-  }
-
-  else if (board->rows == 16 && board->cols == 16) {
-    board->bombs = 40;
-    board->flags = 40;
-  }
-
-  else if (board->rows == 16 && board->cols == 30) {
-    board->bombs = 99;
-    board->flags = 99;
-  }
-}
-
+// Checks if a move made is valid or not
 MSW_BOOL IsValidPos(MSW_BOARD *board, int x, int y) {
   if (x < 0 || x >= board->rows || y < 0 || y >= board->cols) {
     return FALSE;
@@ -270,20 +268,23 @@ MSW_BOOL IsValidPos(MSW_BOARD *board, int x, int y) {
   }
 }
 
+// Function to randomly place bombs on the board
 void PlaceBombs(MSW_CTX *ctx) {
   MSW_BOARD *board = ctx->board;
   int i, j, x, y, bombs = board->bombs;
 
   while (bombs > 0) {
-    x = ranged(0, board->rows - 1);
-    y = ranged(0, board->cols - 1);
+    x = ranged(0, board->rows - 1); // Generates a random x value
+    y = ranged(0, board->cols - 1); // Generates a random y value
 
     MSW_CELL *cells = *board->cells;
 
-    if (cells[x * board->cols + y].bomb == 0) {
+    if (cells[x * board->cols + y].bomb ==
+        0) { // Checks if a bomb already exists
       cells[x * board->cols + y].bomb = 1;
 
-      for (i = -1; i <= 1; ++i) {
+      for (i = -1; i <= 1; ++i) { // Iteratively increases the bomb value of all
+                                  // cells around the bomb
         for (j = -1; j <= 1; ++j) {
           if (IsValidPos(board, x + i, y + j)) {
             cells[(x + i) * board->cols + (y + j)].value++;
@@ -295,13 +296,12 @@ void PlaceBombs(MSW_CTX *ctx) {
   }
 }
 
+// function to initialise the board with 0 values
 void GenerateBoard(MSW_CTX *ctx) {
   MSW_BOARD *board = ctx->board;
   if (!board) {
     exit(2);
   }
-
-  SetBombs(ctx);
 
   ctx->cur_board =
       (MSW_CELL *)malloc(sizeof(MSW_CELL) * board->rows * board->cols);
@@ -321,6 +321,7 @@ void GenerateBoard(MSW_CTX *ctx) {
   PlaceBombs(ctx);
 }
 
+// Function to display the board
 void Display(MSW_CTX *ctx, int sx, int sy) {
   MSW_BOARD *board = ctx->board;
   MSW_CELL *cells = *board->cells;
@@ -385,6 +386,7 @@ void Display(MSW_CTX *ctx, int sx, int sy) {
   printf("%s%sTIME%s %4ds\n", BG_GRAY, FG_BLACK, FG_BG_CLEAR, 0);
 }
 
+// Function that clicks cells recursively
 void Click(MSW_CTX *ctx, int x, int y) {
   MSW_BOARD *board = ctx->board;
   MSW_CELL *cells = *board->cells;
@@ -400,7 +402,8 @@ void Click(MSW_CTX *ctx, int x, int y) {
   }
 
   cells[x * board->cols + y].clicked = 1;
-
+  // If the cell has no bombs around it, click all the cells around it
+  // recursively
   if (cells[x * board->cols + y].value == 0) {
     for (int i = -1; i <= 1; i++) {
       for (int j = -1; j <= 1; j++) {
@@ -412,11 +415,12 @@ void Click(MSW_CTX *ctx, int x, int y) {
   }
 }
 
+// Function to click all the cells around a cell, if all expected flags are met
 void MultiClick(MSW_CTX *ctx, int x, int y) {
   MSW_BOARD *board = ctx->board;
   MSW_CELL *cells = *board->cells;
   int flagcount = 0;
-
+  // counts the flags around the cell
   for (int i = -1; i <= 1; i++) {
     for (int j = -1; j <= 1; j++) {
       if (IsValidPos(board, x + i, y + j)) {
@@ -426,9 +430,9 @@ void MultiClick(MSW_CTX *ctx, int x, int y) {
     }
   }
   if (flagcount != cells[x * board->cols + y].value) {
-    // printf("Incorect move!\n");
     return;
   }
+  // clicks all the cells around the cell
   for (int i = -1; i <= 1; i++) {
     for (int j = -1; j <= 1; j++) {
       if (IsValidPos(board, x + i, y + j) &&
@@ -439,6 +443,7 @@ void MultiClick(MSW_CTX *ctx, int x, int y) {
   }
 }
 
+// function that places flags on user input
 void Flag(MSW_CTX *ctx, int x, int y) {
   MSW_BOARD *board = ctx->board;
   MSW_CELL *cells = *board->cells;
@@ -457,6 +462,7 @@ void Flag(MSW_CTX *ctx, int x, int y) {
   }
 }
 
+// function to take user input for moves
 void Move(MSW_CTX *ctx) {
   MSW_BOARD *board = ctx->board;
   MSW_CELL *cells = *board->cells;
@@ -535,6 +541,7 @@ void Move(MSW_CTX *ctx) {
   }
 }
 
+// creates the minesweeper context
 MSW_CTX *GetMswCtx(void) {
   MSW_CTX *newCtx = (MSW_CTX *)malloc(sizeof(MSW_CTX));
   if (!newCtx) {
@@ -549,6 +556,7 @@ MSW_CTX *GetMswCtx(void) {
   return newCtx;
 }
 
+// Adds the board to the context
 MSW_BOOL NewBoard(MSW_CTX *ctx) {
   if (ctx->board)
     free(ctx->board);
@@ -561,13 +569,14 @@ MSW_BOOL NewBoard(MSW_CTX *ctx) {
   }
 }
 
+// main function
 int main(void) {
-  int timer = 0;
-  init_leader();
+  int timer = 0; // sets the timer to 0
+  init_leader(); // loads the leaderboard
   system("clear");
   randctx();
 
-  MSW_CTX *ctx = GetMswCtx();
+  MSW_CTX *ctx = GetMswCtx(); // creates the context
   if (!ctx) {
     exit(2);
   }
@@ -579,13 +588,13 @@ int main(void) {
     }
     SelectDifficulty(ctx);
     GenerateBoard(ctx);
-    time_t start = time(NULL);
-    do {
+    time_t start = time(NULL); // gets start time
+    do {                       // game loop
       Move(ctx);
     } while (CheckWin(ctx) == MSW_NONE);
 
     Display(ctx, -1, -1);
-    if (CheckWin(ctx) == MSW_WIN) {
+    if (CheckWin(ctx) == MSW_WIN) { // win checker
       printf("\n\n"
              "██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗██╗███╗   ██╗██╗\n"
              "╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██║████╗  ██║██║\n"
@@ -594,11 +603,11 @@ int main(void) {
              "   ██║   ╚██████╔╝╚██████╔╝    ╚███╔███╔╝██║██║ ╚████║██╗\n"
              "   ╚═╝    ╚═════╝  ╚═════╝      ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═╝\n\n");
       printf("Time taken is : %d seconds\n",
-             (timer = (int)(time(NULL) - start)));
+             (timer = (int)(time(NULL) - start))); // saves time taken
       char name[20];
       printf("Enter your name: ");
       scanf("%s", name);
-      insert_leader(name, timer);
+      insert_leader(name, timer); // inserts into leaderboard
       write_leader();
       display_leader();
     } else {
@@ -618,7 +627,6 @@ int main(void) {
       display_leader();
     }
 
-    // TODO : fix play again feature
     fflush(stdin);
     printf("Play again? (Y/N): ");
     fflush(stdin);
