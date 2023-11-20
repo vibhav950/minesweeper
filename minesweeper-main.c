@@ -125,7 +125,7 @@ void insert_leader(char name[], int time, int difficulty) {
 
 // function to display the leaderboard
 void display_leader(int difficulty) {
-  printf("\n\n Leaderboard\n");
+  printf("\n\n  \x1B[1m\x1B[4mLeaderboard\x1B[0m\n");
   LEADER *lboard = choose_leader(difficulty);
   LEADER *temp = lboard->next;
   int i = 1;
@@ -601,6 +601,20 @@ MSW_BOOL NewBoard(MSW_CTX *ctx) {
   }
 }
 
+void PrintChoice (char cho) {
+  switch (cho) {
+    case 'Y':
+      printf("\r %s%sYES%s NO ", BG_GREEN_LIGHT, FG_BLACK,
+            FG_BG_CLEAR);
+      break;
+    case 'N':
+      printf("\r YES %s%sNO%s ", BG_RED_LIGHT, FG_BLACK,
+            FG_BG_CLEAR);
+      break;
+    // printf("\n\n");
+  }
+}
+
 // main function
 int main(void) {
   int timer = 0; // sets the timer to 0 // loads the leaderboard
@@ -655,18 +669,36 @@ int main(void) {
              " ░ ░         ░ ░     ░            ░  ░    ░ ░        ░     ░  ░\n"
              " ░ ░                                                           "
              "\n\n");
-      printf("Time taken is : %.0f seconds\n", (double)(time(NULL) - start));
+      // printf("Time taken is : %.0f seconds\n", (double)(time(NULL) - start));
       display_leader(ctx->difficulty);
     }
 
-    fflush(stdin);
-    printf("Play again? (Y/N): ");
-    fflush(stdin);
-    getchar();
-    c = getchar();
-    if (c == 'N' || c == 'n') {
-      break;
+    printf("\n\nPLAY AGAIN?\n\n");
+    PrintChoice('Y');
+    /* SPACE bar */
+    char cho = 'N';
+    while ((c = _getch()) != 32) {
+      switch (c) {
+        case 'a':
+        case 'A':
+          PrintChoice((cho='Y'));
+          break;
+        case 'd':
+        case 'D':
+          PrintChoice((cho='N'));
+          break;
+        /* dummy */
+        default: 
+          break;
+      }
     }
+    switch (cho) {
+      case 'Y':
+        break;
+      default:
+        exit(0);
+    }
+
     ctx->bombstep = 0;
   } while (1);
 
