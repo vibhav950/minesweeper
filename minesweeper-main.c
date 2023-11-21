@@ -161,6 +161,7 @@ void write_leader(int difficulty) {
     temp = temp->next;
     i++;
   }
+  init_leader(difficulty);
 }
 
 /* ===================== DEV ===================== */
@@ -601,16 +602,14 @@ MSW_BOOL NewBoard(MSW_CTX *ctx) {
   }
 }
 
-void PrintChoice (char cho) {
+void PrintChoice(char cho) {
   switch (cho) {
-    case 'Y':
-      printf("\r %s%sYES%s NO ", BG_GREEN_LIGHT, FG_BLACK,
-            FG_BG_CLEAR);
-      break;
-    case 'N':
-      printf("\r YES %s%sNO%s ", BG_RED_LIGHT, FG_BLACK,
-            FG_BG_CLEAR);
-      break;
+  case 'Y':
+    printf("\r %s%sYES%s NO ", BG_GREEN_LIGHT, FG_BLACK, FG_BG_CLEAR);
+    break;
+  case 'N':
+    printf("\r YES %s%sNO%s ", BG_RED_LIGHT, FG_BLACK, FG_BG_CLEAR);
+    break;
     // printf("\n\n");
   }
 }
@@ -679,24 +678,24 @@ int main(void) {
     char cho = 'N';
     while ((c = _getch()) != 32) {
       switch (c) {
-        case 'a':
-        case 'A':
-          PrintChoice((cho='Y'));
-          break;
-        case 'd':
-        case 'D':
-          PrintChoice((cho='N'));
-          break;
-        /* dummy */
-        default: 
-          break;
+      case 'a':
+      case 'A':
+        PrintChoice((cho = 'Y'));
+        break;
+      case 'd':
+      case 'D':
+        PrintChoice((cho = 'N'));
+        break;
+      /* dummy */
+      default:
+        break;
       }
     }
     switch (cho) {
-      case 'Y':
-        break;
-      default:
-        exit(0);
+    case 'Y':
+      break;
+    default:
+      exit(0);
     }
 
     ctx->bombstep = 0;
