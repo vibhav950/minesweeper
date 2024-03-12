@@ -1,3 +1,5 @@
+#pragma once
+
 typedef enum _MSW_STATE_EN { FALSE, TRUE } MSW_BOOL;
 typedef enum _MSW_BOOL_EN { MSW_WIN, MSW_LOSS, MSW_NONE } MSW_STATE;
 
@@ -29,6 +31,15 @@ typedef struct _CTX_ST
   MSW_CELL *cur_board;
 } MSW_CTX;
 
+/* Leaderboard doubly linked priority list */
+typedef struct _LEADER_ST
+{
+  int time;
+  char name[20];
+  struct _LEADER_ST *next;
+  struct _LEADER_ST *previous;
+} LEADER;
+
 MSW_STATE CheckWin (MSW_CTX *ctx);
 void SelectDifficulty(MSW_CTX *ctx);
 void SetBombs (MSW_CTX *ctx);
@@ -40,5 +51,12 @@ void Click (MSW_CTX *ctx, int x, int y);
 void MultiClick (MSW_CTX *ctx, int x, int y);
 void Flag(MSW_CTX *ctx, int x, int y);
 void Move (MSW_CTX *ctx);
-MSW_CTX* GetMswCtx (void);
+MSW_CTX *GetMswCtx (void);
 MSW_BOOL NewBoard (MSW_CTX *ctx);
+
+/* Leaderboard functions */
+LEADER *ChooseLeader(int difficulty);
+void InitLeader(int difficulty);
+void InsertLeader(char name[], int time, int difficulty);
+void DisplayLeader(int difficulty);
+void WriteLeader(int difficulty);

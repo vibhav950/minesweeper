@@ -1,3 +1,6 @@
+/* rand.c - lightweight uniform random number generator using a Fibonacci LFSR
+   corresponding to the primitive polynomial x^128 + x^127 + x^126 + x^121 + 1 */
+
 #include "./rand.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -14,20 +17,20 @@
     #include <unistd.h>
 #endif
 
-_UINT128 *_state = NULL;
+UINT128 *_state = NULL;
 
 /* One shift-update move */
 #define _rotate do {\
     _state->x0 = (_state->x0 >> 1) | (_state->x1 << 63);\
     _state->x1 >>= 1;\
     _state->x1 |=\
-    ((uint64_t)(((_state->x0) ^ (_state->x0) >> 1) ^ ((_state->x0) >> 2) ^ ((_state->x0) >> 7) & 0x1) << 63);\
+    (uint64_t)(_state->x0 ^ ((_state->x0) >> 1) ^ ((_state->x0) >> 2) ^ ((_state->x0) >> 7) & 0x1) << 63;\
     } while(0)
 
 /* Has to be called to initiate LFSR, otherwise error */
 void randctx(void)
 {
-    _state = (_UINT128*) malloc(sizeof(_UINT128));
+    _state = (UINT128*) malloc(sizeof(UINT128));
     if (!_state)
     {
         exit(E_INIT);
@@ -48,7 +51,7 @@ void randctx(void)
         {
             exit(E_INIT);
         }
-        if (read(res, (void*) _state, sizeof(_UINT128)) < 0)
+        if (read(res, (void*) _state, sizeof(UINT128)) < 0)
         {
             exit(E_INIT);
         }

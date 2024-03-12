@@ -5,10 +5,10 @@
 
 #include <inttypes.h>
 
-typedef struct {
-    uint64_t x0:64;
+typedef struct _UINT128 {
+    uint64_t x0;
     uint64_t x1;
-} _UINT128;
+} UINT128;
 
 void randctx(void);
 uint64_t ranged(uint64_t a, uint64_t b);
