@@ -1,6 +1,6 @@
 # Minesweeper
 
-Minesweeper game written entirely in C!
+Minesweeper game written entirely in C
 
 ## About
 
@@ -17,11 +17,11 @@ It features the following:
 
 ## Controls
 
-- Use `w`, `a`, `s`, `d` to move the highlighted cell.
-- `SPACE` to select the highlighted cell.
+- Use `w`, `a`, `s`, `d` to move the highlighted cell
+- `SPACE` to select the highlighted cell
 - `q` to quit
-- `c` to click a cell.
-- `f` to place a flag.
+- `c` to click a cell
+- `f` to place a flag
 
 ## Command line UI
 

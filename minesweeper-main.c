@@ -175,7 +175,7 @@ void WriteLeader(int difficulty)
     temp = temp->next;
     i++;
   }
-  init_leader(difficulty);
+  InitLeader(difficulty);
 }
 
 /* Checks the win state (a win is when all the valid cells are clicked) */
